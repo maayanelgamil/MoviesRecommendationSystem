@@ -15,6 +15,9 @@ namespace Recommendation
         /// </summary>
         /// <param name="movieID">movie id</param>
         /// <param name="movieVector">the given list to change</param>
-        public void getMovieVector(int movieID, ref List<UserRank> movieVector);
+        public void getMovieVector(int movieID, ref List<UserRank> movieVector)
+        {
+
+        }
     }
 }
