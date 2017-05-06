@@ -13,19 +13,109 @@ namespace Recommendation
     {
         DBconnection DB;
         int numOfMovies;
-        Dictionary<String, MovieParams> moviesComputeParams;
-        public Ranker(int _numOfMovies)
+        MovieParams[] moviesComputedParams;
+        int[][] movieRecommendations;
+        int numOfRecommended;
+
+        /// <summary>
+        /// C'tor for the ranker
+        /// </summary>
+        /// <param name="_numOfMovies">The number of movies in the database</param>
+        /// <param name="_numOfRecommended">The number of movies to recommend for each movie</param>
+        public Ranker(int _numOfMovies , int _numOfRecommended)
         {
-            numOfMovies = _numOfMovies;
             DB = new DBconnection();
-            moviesComputeParams = new Dictionary<string, MovieParams>();
+            numOfMovies = DB.getNumOfMovies();
+            numOfRecommended = _numOfRecommended;
+            moviesComputedParams = new MovieParams[numOfMovies];
+            movieRecommendations = new int[numOfMovies][];
         }
 
-        private void rankMovies() { }
-
-        private List<String> getRecommendedMovies(String movieID)
+        /// <summary>
+        /// Computes the parameters needed for pearson correlation for all the movies in the database
+        /// </summary>
+        private void computeAllParams()
         {
-            return null;
+            List<UserRank> movieUsersRank;
+            for (int i = 1; i <= numOfMovies; i++)
+            {
+                movieUsersRank = new List<UserRank>();
+                DB.getMovieVector(i, ref movieUsersRank);
+                moviesComputedParams[i] = computeMovieParams(ref movieUsersRank);
+            }
         }
+
+        /// <summary>
+        /// Computes the movie parameters for a single movie
+        /// </summary>
+        /// <param name="movieUsersRank">The list of users ranking to update</param>
+        /// <returns></returns>
+        private MovieParams computeMovieParams(ref List<UserRank> movieUsersRank)
+        {
+            MovieParams mp = new MovieParams();
+            //compute here
+
+            return mp;
+        }
+
+        /// <summary>
+        /// Compute recommmendation for all the movies in the database
+        /// </summary>
+        private void computeRecommendations()
+        {
+            for (int i = 0; i < moviesComputedParams.Length; i++)
+            {
+                movieRecommendations[i] = computeMovieRecommendation(i);
+            }     
+        }
+
+        /// <summary>
+        /// Compute the recommended movies for the movie to recommend
+        /// </summary>
+        /// <param name="movieToRecommend">The id of the movie to recommend</param>
+        /// <returns>Array of recommended movies (ids)</returns>
+        private int[] computeMovieRecommendation(int movieToRecommend)
+        {
+            int[] recommendedMovies = new int[numOfRecommended];
+            SortedList<double, int> similarMovies = new SortedList<double, int>();
+            double rank = 0;
+            double max=0;
+            numOfMovies = similarMovies.Count;
+
+            //compute similarity with all the other movies
+            for (int i = 1; i <= numOfMovies; i++)
+            {
+                rank = computeSimilarity
+                    (moviesComputedParams[movieToRecommend], moviesComputedParams[i],movieToRecommend,i);
+                similarMovies.Add(rank, i);
+            }
+
+            //recommend get the top movies and save them
+            for (int i = 0; i < numOfRecommended && i < numOfMovies; i++)
+            {
+                max = similarMovies.Last().Key;
+                recommendedMovies[i] = similarMovies[max];
+                similarMovies.Remove(max);
+            }
+
+            return recommendedMovies;
+        }
+
+        /// <summary>
+        /// Computation of the similarity between the vectors using pearson correlation
+        /// </summary>
+        /// <param name="movieParams1">The parameters of the first movie</param>
+        /// <param name="movieParams2">The parameters of the second movie</param>
+        /// <returns></returns>
+        private double computeSimilarity(MovieParams movieParams1, MovieParams movieParams2,int id1, int id2)
+        {
+            //computation of the formula here
+            return 0;
+        }
+
+        //private List<String> getRecommendedMovies(String movieID)
+        //{
+        //    return null;
+        //}
     }
 }
