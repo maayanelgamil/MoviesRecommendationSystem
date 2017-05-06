@@ -20,6 +20,8 @@ namespace Recommendation
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string _movie;
+        public List<string> _recommendedMovies = new List<string>();
         public MainWindow()
         {
             InitializeComponent();
@@ -28,7 +30,15 @@ namespace Recommendation
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
+            if (slctMovie.Text == string.Empty)
+                System.Windows.MessageBox.Show("Please enter a movie before searching");
+            else {
+                _movie = slctMovie.Text;
 
+                rcdMovies.ItemsSource = _recommendedMovies;
+                rcdHeader.Visibility = Visibility.Visible;
+                rcdMovies.Visibility = Visibility.Visible;
+            }
         }
     }
 }

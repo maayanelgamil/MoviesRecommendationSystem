@@ -30,7 +30,7 @@
         <TextBlock Text="Enter a movie:" Grid.Column="1" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Margin="70,238,70,1" Grid.RowSpan="2" />
         <TextBox Name="slctMovie" Margin="70,8,70,8" Grid.Row="2" Grid.Column="1"  />
         <Button Name="Search" Click="Search_Click" Content="Search" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="69" BorderBrush="#FFF7F2F2" Background="#FFC3C1BB" />
-        <TextBlock Text="Recommended movies:" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Grid.Row="4" Margin="30,10,30,126" Grid.Column="1" />
-        <ListBox  Name="rcdMovies" SelectionMode="Multiple" Grid.Row="4" Grid.Column="1" Margin="60,50,60,0" ></ListBox>
+        <TextBlock Name="rcdHeader" Text="Recommended movies:" Visibility="Hidden" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Grid.Row="4" Margin="30,10,30,126" Grid.Column="1" />
+        <ListBox  Name="rcdMovies" SelectionMode="Multiple" Visibility="Hidden" Grid.Row="4" Grid.Column="1" Margin="60,50,60,0" ></ListBox>
     </Grid>
 </Window>
