@@ -12,7 +12,7 @@ namespace Recommendation
     public class Ranker
     {
         DBconnection DB;
-        MovieParams[] moviesComputedParams;
+        Dictionary<int,MovieParams> moviesComputedParams;
         Dictionary<int, List<int>> movieRecommendations;
         int numOfRecommended;
         List<int> moviesID;
@@ -26,8 +26,9 @@ namespace Recommendation
         {
             DB = new DBconnection();
             numOfRecommended = _numOfRecommended;
-            moviesComputedParams = new MovieParams[moviesID.Count()];
-            movieRecommendations = new int[numOfMovies][];
+            moviesID = DB.getMoviesIDs();
+            moviesComputedParams = new Dictionary<int, MovieParams>();
+            movieRecommendations = new Dictionary<int, List<int>>();
         }
 
         /// <summary>
@@ -52,7 +53,16 @@ namespace Recommendation
         private MovieParams computeMovieParams(ref List<UserRank> movieUsersRank)
         {
             MovieParams mp = new MovieParams();
-            //compute here
+            double sqr_xi = 0;
+            double sum_xi = 0;
+
+            foreach (UserRank rank in movieUsersRank)
+            {
+                sum_xi += rank.Rating;
+                sqr_xi += rank.Rating*rank.Rating;
+            }
+            mp.Avg_xi = sum_xi / moviesID.Count();
+            mp.Var_xi = moviesID.Count() * sqr_xi - sum_xi * sum_xi;
 
             return mp;
         }
@@ -62,10 +72,10 @@ namespace Recommendation
         /// </summary>
         private void computeRecommendations()
         {
-            for (int i = 0; i < moviesComputedParams.Length; i++)
-            {
-                movieRecommendations[i] = computeMovieRecommendation(i);
-            }     
+            foreach (int movieID in moviesID)
+                movieRecommendations.Add(movieID, computeMovieRecommendation(movieID));
+            
+              
         }
 
         /// <summary>
@@ -73,24 +83,29 @@ namespace Recommendation
         /// </summary>
         /// <param name="movieToRecommend">The id of the movie to recommend</param>
         /// <returns>Array of recommended movies (ids)</returns>
-        private int[] computeMovieRecommendation(int movieToRecommend)
+        private List<int> computeMovieRecommendation(int movieToRecommend)
         {
-            int[] recommendedMovies = new int[numOfRecommended];
+            List<int> recommendedMovies = new List<int>();
             SortedList<double, int> similarMovies = new SortedList<double, int>();
             double rank = 0;
             double max=0;
-            numOfMovies = similarMovies.Count;
+            
 
             //compute similarity with all the other movies
-            for (int i = 1; i <= numOfMovies; i++)
+            foreach (int movieID in moviesID)
             {
-                rank = computeSimilarity
-                    (moviesComputedParams[movieToRecommend], moviesComputedParams[i],movieToRecommend,i);
-                similarMovies.Add(rank, i);
+                if (movieToRecommend != movieID)
+                {
+                    rank = computeSimilarity
+           (moviesComputedParams[movieToRecommend], moviesComputedParams[movieID], movieToRecommend, movieID);
+                }
+                similarMovies.Add(rank, movieID);
             }
 
+            int numOfRankedMovies = similarMovies.Count();        
+
             //recommend get the top movies and save them
-            for (int i = 0; i < numOfRecommended && i < numOfMovies; i++)
+            for (int i = 0; i < numOfRecommended && i < numOfRankedMovies; i++)
             {
                 max = similarMovies.Last().Key;
                 recommendedMovies[i] = similarMovies[max];
@@ -106,10 +121,28 @@ namespace Recommendation
         /// <param name="movieParams1">The parameters of the first movie</param>
         /// <param name="movieParams2">The parameters of the second movie</param>
         /// <returns></returns>
-        private double computeSimilarity(MovieParams movieParams1, MovieParams movieParams2,int id1, int id2)
+        private double computeSimilarity(MovieParams movieParams1, MovieParams movieParams2, int id1, int id2)
         {
             //computation of the formula here
-            return 0;
+            double denominator = movieParams1.Var_xi*movieParams2.Var_xi;
+            double numerator = 0;
+            int i=0, j=0;
+            List<UserRank> movie1Rank=new List<UserRank>(), movie2Rank = new List<UserRank>();
+
+            DB.getMovieVector(id1, ref movie1Rank);
+            DB.getMovieVector(id1, ref movie2Rank);
+
+            while(i < movie1Rank.Count && j < movie2Rank.Count())
+            {
+                if (movie1Rank[i].UserID == movie2Rank[j].UserID)
+                    numerator += movie1Rank[i].Rating * movie2Rank[j].Rating;
+                else if (movie1Rank[i].UserID > movie2Rank[j].UserID)
+                    j++;
+                else
+                    i++;
+            }
+            numerator = numerator - moviesID.Count * movieParams1.Avg_xi * movieParams2.Avg_xi;
+            return numerator / denominator;
         }
 
         //private List<String> getRecommendedMovies(String movieID)
