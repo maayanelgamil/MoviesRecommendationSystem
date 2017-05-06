@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Recommendation
 {
-    class MovieRank
+
+    public class MovieParams
     {
+        double sqr_xi;
+        double sqr_yi;
+        double avg_xi;
+        double avg_yi;
     }
 }
