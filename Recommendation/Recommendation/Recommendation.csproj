@@ -55,6 +55,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Movie.cs" />
     <Compile Include="MovieRank.cs" />
     <Compile Include="Ranker.cs" />
     <Compile Include="UserRank.cs" />

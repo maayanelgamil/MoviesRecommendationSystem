@@ -8,5 +8,13 @@ namespace Recommendation
 {
     class UserRank
     {
+        private int userID;
+        private double rating;
+
+        public UserRank(int userID, double rating)
+        {
+            this.userID = userID;
+            this.rating = rating;
+        }
     }
 }
