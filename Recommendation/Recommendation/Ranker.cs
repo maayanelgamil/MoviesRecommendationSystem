@@ -12,22 +12,21 @@ namespace Recommendation
     public class Ranker
     {
         DBconnection DB;
-        int numOfMovies;
         MovieParams[] moviesComputedParams;
-        int[][] movieRecommendations;
+        Dictionary<int, List<int>> movieRecommendations;
         int numOfRecommended;
+        List<int> moviesID;
 
         /// <summary>
         /// C'tor for the ranker
         /// </summary>
         /// <param name="_numOfMovies">The number of movies in the database</param>
         /// <param name="_numOfRecommended">The number of movies to recommend for each movie</param>
-        public Ranker(int _numOfMovies , int _numOfRecommended)
+        public Ranker( int _numOfRecommended)
         {
             DB = new DBconnection();
-            numOfMovies = DB.getNumOfMovies();
             numOfRecommended = _numOfRecommended;
-            moviesComputedParams = new MovieParams[numOfMovies];
+            moviesComputedParams = new MovieParams[moviesID.Count()];
             movieRecommendations = new int[numOfMovies][];
         }
 
@@ -37,11 +36,11 @@ namespace Recommendation
         private void computeAllParams()
         {
             List<UserRank> movieUsersRank;
-            for (int i = 1; i <= numOfMovies; i++)
+            foreach (int id in moviesID)
             {
                 movieUsersRank = new List<UserRank>();
-                DB.getMovieVector(i, ref movieUsersRank);
-                moviesComputedParams[i] = computeMovieParams(ref movieUsersRank);
+                DB.getMovieVector(id, ref movieUsersRank);
+                moviesComputedParams[id] = computeMovieParams(ref movieUsersRank);
             }
         }
 
