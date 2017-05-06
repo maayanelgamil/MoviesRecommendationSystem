@@ -11,15 +11,20 @@ namespace Recommendation
     /// </summary>
     public class Ranker
     {
+        DBconnection DB;
         int numOfMovies;
+        Dictionary<String, MovieParams> moviesComputeParams;
         public Ranker(int _numOfMovies)
         {
             numOfMovies = _numOfMovies;
+            DB = new DBconnection();
+            moviesComputeParams = new Dictionary<string, MovieParams>();
         }
 
-        private List<String> getRecommendedMovies(List<UserRank> movieUsersRank)
-        {
+        private void rankMovies() { }
 
+        private List<String> getRecommendedMovies(String movieID)
+        {
             return null;
         }
     }
