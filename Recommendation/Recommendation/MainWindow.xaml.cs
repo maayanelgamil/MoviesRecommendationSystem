@@ -23,6 +23,7 @@ namespace Recommendation
         public MainWindow()
         {
             InitializeComponent();
+            //New test
         }
     }
 }
