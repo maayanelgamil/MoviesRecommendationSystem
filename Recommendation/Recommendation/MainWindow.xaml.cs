@@ -25,5 +25,10 @@ namespace Recommendation
             InitializeComponent();
             //New test
         }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
