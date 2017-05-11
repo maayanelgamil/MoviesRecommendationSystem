@@ -16,7 +16,7 @@ namespace Recommendation
         protected override void OnStartup(StartupEventArgs e)
         {
 
-            DBconnection db = new DBconnection();
+            //DBconnection db = new DBconnection();
 
         }
     }
