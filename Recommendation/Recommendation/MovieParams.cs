@@ -9,9 +9,33 @@ namespace Recommendation
 
     public class MovieParams
     {
-        double sqr_xi;
-        double sqr_yi;
+        double var_xi;
         double avg_xi;
-        double avg_yi;
+
+        public double Var_xi
+        {
+            get
+            {
+                return var_xi;
+            }
+
+            set
+            {
+                var_xi = value;
+            }
+        }
+
+        public double Avg_xi
+        {
+            get
+            {
+                return avg_xi;
+            }
+
+            set
+            {
+                avg_xi = value;
+            }
+        }
     }
 }

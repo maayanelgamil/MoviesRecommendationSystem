@@ -11,10 +11,36 @@ namespace Recommendation
         private int userID;
         private double rating;
 
+        public int UserID
+        {
+            get
+            {
+                return userID;
+            }
+
+            set
+            {
+                userID = value;
+            }
+        }
+
+        public double Rating
+        {
+            get
+            {
+                return rating;
+            }
+
+            set
+            {
+                rating = value;
+            }
+        }
+
         public UserRank(int userID, double rating)
         {
-            this.userID = userID;
-            this.rating = rating;
+            this.UserID = userID;
+            this.Rating = rating;
         }
     }
 }
