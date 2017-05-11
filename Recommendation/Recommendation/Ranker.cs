@@ -29,7 +29,9 @@ namespace Recommendation
             moviesID = DB.getMoviesIDs();
             moviesComputedParams = new Dictionary<int, MovieParams>();
             movieRecommendations = new Dictionary<int, List<int>>();
+            computeRecommendations();
         }
+
 
         /// <summary>
         /// Computes the parameters needed for pearson correlation for all the movies in the database
@@ -72,10 +74,11 @@ namespace Recommendation
         /// </summary>
         private void computeRecommendations()
         {
+            computeAllParams();
             foreach (int movieID in moviesID)
+            {  
                 movieRecommendations.Add(movieID, computeMovieRecommendation(movieID));
-            
-              
+            }                
         }
 
         /// <summary>
@@ -86,7 +89,7 @@ namespace Recommendation
         private List<int> computeMovieRecommendation(int movieToRecommend)
         {
             List<int> recommendedMovies = new List<int>();
-            SortedList<double, int> similarMovies = new SortedList<double, int>();
+            Dictionary<int, double> similarMovies = new Dictionary<int, double>();
             double rank = 0;
             double max=0;
             
@@ -99,17 +102,16 @@ namespace Recommendation
                     rank = computeSimilarity
            (moviesComputedParams[movieToRecommend], moviesComputedParams[movieID], movieToRecommend, movieID);
                 }
-                similarMovies.Add(rank, movieID);
+                similarMovies.Add(movieID, rank);
             }
 
-            int numOfRankedMovies = similarMovies.Count();        
+            int numOfRankedMovies = similarMovies.Count();
 
             //recommend get the top movies and save them
             for (int i = 0; i < numOfRecommended && i < numOfRankedMovies; i++)
             {
-                max = similarMovies.Last().Key;
-                recommendedMovies[i] = similarMovies[max];
-                similarMovies.Remove(max);
+                recommendedMovies[i] = similarMovies.Max().Key;
+                similarMovies.Remove(recommendedMovies[i]);
             }
 
             return recommendedMovies;
@@ -135,7 +137,11 @@ namespace Recommendation
             while(i < movie1Rank.Count && j < movie2Rank.Count())
             {
                 if (movie1Rank[i].UserID == movie2Rank[j].UserID)
+                {
                     numerator += movie1Rank[i].Rating * movie2Rank[j].Rating;
+                    i++;
+                    j++;
+                }
                 else if (movie1Rank[i].UserID > movie2Rank[j].UserID)
                     j++;
                 else
@@ -145,9 +151,9 @@ namespace Recommendation
             return numerator / denominator;
         }
 
-        //private List<String> getRecommendedMovies(String movieID)
-        //{
-        //    return null;
-        //}
+        public List<int> getRecommendedMovies(int movieID)
+        {
+            return movieRecommendations[movieID];
+        }
     }
 }

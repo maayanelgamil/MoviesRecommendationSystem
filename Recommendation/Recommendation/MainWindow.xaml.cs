@@ -21,9 +21,11 @@ namespace Recommendation
     public partial class MainWindow : Window
     {
         private string _movie;
-        public List<string> _recommendedMovies = new List<string>();
+        public List<int> _recommendedMovies;
+        Ranker ranker;
         public MainWindow()
         {
+            ranker = new Ranker(5);
             InitializeComponent();
             //New test
         }
@@ -35,6 +37,7 @@ namespace Recommendation
             else {
                 _movie = slctMovie.Text;
 
+                _recommendedMovies = ranker.getRecommendedMovies(2);
                 rcdMovies.ItemsSource = _recommendedMovies;
                 rcdHeader.Visibility = Visibility.Visible;
                 rcdMovies.Visibility = Visibility.Visible;

@@ -9,7 +9,7 @@ namespace Recommendation
 {
     class DBconnection
     {
-        const string DIRECTORY_PATH = @"C:\Users\ben\Desktop\לימודים\סמסטר ו\הכנה לפרוייקט\ml-20m";
+        const string DIRECTORY_PATH = @"C:\Users\Kulik\Desktop\movieDB\ml-20m";
 
         Dictionary<int, List<UserRank>> moviesVectors; // contains all the movies vectors by movie ID
         Dictionary<int, Movie> movies;// contains all the movies and their details
