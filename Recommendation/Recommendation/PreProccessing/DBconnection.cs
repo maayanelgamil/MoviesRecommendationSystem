@@ -12,12 +12,12 @@ namespace Recommendation
         const string DIRECTORY_PATH = @"C:\Users\Kulik\Desktop\movieDB\ml-20m";
 
         Dictionary<int, List<UserRank>> moviesVectors; // contains all the movies vectors by movie ID
-        Dictionary<int, Movie> movies;// contains all the movies and their details
+        Dictionary<int, string> movies;// contains all the movies and their details
 
         public DBconnection()
         {
             readMoviesVectors();
-            readMoviesDetails();
+            readMoviesNames();
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace Recommendation
         /// <summary>
         /// creating the movies corpus
         /// </summary>
-        private void readMoviesDetails()
+        private void readMoviesNames()
         {
-            movies = new Dictionary<int, Movie>();
+            movies = new Dictionary<int, string>();
             using (FileStream fs = File.OpenRead(DIRECTORY_PATH + "\\movies.csv"))
             using (StreamReader reader = new StreamReader(fs))
             {
@@ -59,16 +59,44 @@ namespace Recommendation
                 while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine();
+                    if (line.IndexOf('(') != line.LastIndexOf('('))
+                    {
+                        // removes movies other names
+                        line = line.Remove(line.IndexOf('('), line.LastIndexOf('(') - line.IndexOf('(') + 1);
+                    }
+
+                    if (line.IndexOf('(') == -1)
+                    {
+                        // skip movies with no year
+                        continue;
+                    }
                     string[] values = line.Split(',');
                     int movieID = Int32.Parse(values[0]);
 
                     if (!moviesVectors.ContainsKey(movieID)) // insert onley the relevant movies
                     {
+                        // skip movies with no data
                         continue;
                     }
-                    string name = values[1];
-                    List<string> genres = new List<string>(values[2].Split('|'));
-                    movies.Add(movieID, new Movie(movieID, name, genres));
+
+                    string name = "";
+
+                    if (values.Length == 4)// starts with "the"
+                    {
+                        name = values[1].Trim('\"');
+                        string start = values[2].Substring(0, values[2].IndexOf('('));
+                        name = (start + name);
+                    }
+                    else if (values.Length == 3 && values[1].IndexOf('(')!=-1) // don't start with "the"
+                    {
+                        name = values[1].Substring(0, values[1].IndexOf('(') - 1);
+                    }
+                    else // skip movies with bad names
+                    {
+                        continue;
+                    }
+
+                    movies.Add(movieID, name.Trim().ToLower());
                 }
             }
         }

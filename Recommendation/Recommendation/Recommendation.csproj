@@ -55,10 +55,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Movie.cs" />
-    <Compile Include="MovieParams.cs" />
-    <Compile Include="Ranker.cs" />
-    <Compile Include="UserRank.cs" />
+    <Compile Include="Model.cs" />
+    <Compile Include="PreProccessing\MovieParams.cs" />
+    <Compile Include="PreProccessing\Ranker.cs" />
+    <Compile Include="PreProccessing\UserRank.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,7 +67,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DBconnection.cs" />
+    <Compile Include="PreProccessing\DBconnection.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -21,13 +21,15 @@ namespace Recommendation
     public partial class MainWindow : Window
     {
         private string _movie;
-        public List<int> _recommendedMovies;
-        Ranker ranker;
+        private Model model;
+        private List<string> _recommendedMovies = new List<string>();
+        private List<string> noResult = new List<string>();
+
         public MainWindow()
         {
-            ranker = new Ranker(5);
             InitializeComponent();
-            //New test
+            noResult.Add("No recommendation was found!");
+            model = new Model();
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
@@ -36,8 +38,8 @@ namespace Recommendation
                 System.Windows.MessageBox.Show("Please enter a movie before searching");
             else {
                 _movie = slctMovie.Text;
-
-                _recommendedMovies = ranker.getRecommendedMovies(2);
+                _recommendedMovies = model.getRecommendation(_movie.ToLower());
+                if (_recommendedMovies==null)
                 rcdMovies.ItemsSource = _recommendedMovies;
                 rcdHeader.Visibility = Visibility.Visible;
                 rcdMovies.Visibility = Visibility.Visible;
