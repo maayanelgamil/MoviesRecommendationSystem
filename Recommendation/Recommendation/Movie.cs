@@ -50,11 +50,25 @@ namespace Recommendation
             }
         }
 
+        string year;
+        public string Year
+        {
+            get
+            {
+                return year;
+            }
 
-        public Movie(int movieID,string movieName,List<string> genres)
+            set
+            {
+                year = value;
+            }
+        }
+
+        public Movie(int movieID,string movieName,string year,List<string> genres)
         {
             this.movieID = movieID;
             this.movieName = movieName;
+            this.year = year;
             this.genres = genres;
         }
        

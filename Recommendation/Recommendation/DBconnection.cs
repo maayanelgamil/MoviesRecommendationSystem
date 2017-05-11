@@ -66,9 +66,80 @@ namespace Recommendation
                     {
                         continue;
                     }
-                    string name = values[1];
-                    List<string> genres = new List<string>(values[2].Split('|'));
-                    movies.Add(movieID, new Movie(movieID, name, genres));
+                    string name="";
+                    string year="";
+                    List<string> genres = new List<string>();
+                    if (values.Length == 4)// starts with "the"
+                    {
+                        //one '('
+                        if (values[2].IndexOf('(') == values[2].LastIndexOf('('))
+                        {
+                            name = values[1].Trim('\"');
+                            string start = values[2].Substring(0, values[2].IndexOf('('));
+                            name = (start + name).Trim();
+                            year = values[2].Substring(values[2].IndexOf('(') + 1, 4);
+                        }
+                        else //more '('
+                        {
+                            name = values[1].Trim('\"');
+                            string start = values[2].Substring(0, values[2].IndexOf('('));
+                            name = (start + name).Trim();
+                            year = values[2].Substring(values[2].LastIndexOf('(') + 1, 4);
+                        }
+                        genres = new List<string>(values[3].Split('|'));
+                    }
+                    else if (values.Length == 5) // twice "the"
+                    {
+                        name = values[1].Trim('\"');
+                        string start;
+                        if (values[2].IndexOf('(') != -1)
+                            start = values[2].Substring(0, values[2].IndexOf('('));
+                        else
+                            start = values[3].Substring(0, values[3].IndexOf('('))+ values[2];
+                        name = (start + name).Trim();
+                        year = values[3].Substring(values[3].IndexOf('(') + 1, 4);
+                        genres = new List<string>(values[4].Split('|'));
+                    }
+                    else if (values.Length == 6) // twice "the"
+                    {
+                        name = values[1].Trim('\"');
+                        string start;
+                        if (values[3].IndexOf('(') != -1)
+                            start = values[3].Substring(0, values[3].IndexOf('(')) + values[2];
+                        else if (values[2].IndexOf('(') != -1)
+                            start = values[2].Substring(0, values[2].IndexOf('('));
+                        else
+                        {
+                            start = values[1];
+                            name = values[4].Substring(0, values[4].IndexOf('('));
+                        }
+                        name = (start + name).Trim();
+                        year = values[4].Substring(values[4].IndexOf('(') + 1, 4);
+                        genres = new List<string>(values[5].Split('|'));
+                    }
+                    else if (values.Length == 8) // twice "the"
+                    {
+                        name = values[1].Trim('\"').Trim();
+                        year = values[6].Substring(values[6].IndexOf('(') + 1, 4);
+                        genres = new List<string>(values[7].Split('|'));
+                    }
+                    else // normal
+                    {
+                        // one '('
+                        if (values[1].IndexOf('(') == values[1].LastIndexOf('('))
+                        {
+                            name = values[1].Substring(0, values[1].IndexOf('(') - 1);
+                            year = values[1].Substring(values[1].IndexOf('(') + 1, 4);
+                        }
+                        else //more '('
+                        {
+                            name = values[1].Substring(0, values[1].IndexOf('(') - 1);
+                            year = values[1].Substring(values[1].LastIndexOf('(') + 1, 4);
+                        }
+                        genres = new List<string>(values[2].Split('|'));
+                    }
+                  
+                    movies.Add(movieID, new Movie(movieID, name, year,genres));
                 }
             }
         }
