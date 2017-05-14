@@ -28,9 +28,10 @@ namespace Recommendation
         public MainWindow()
         {
             InitializeComponent();
-            noResult.Add("No recommendation was found!");
+            noResult.Add("No Recommendations Found!");
             model = new Model();
         }
+
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
@@ -39,7 +40,8 @@ namespace Recommendation
             else {
                 _movie = slctMovie.Text;
                 _recommendedMovies = model.getRecommendation(_movie.ToLower());
-                if (_recommendedMovies==null)
+                if (_recommendedMovies == null)
+                    _recommendedMovies = noResult;
                 rcdMovies.ItemsSource = _recommendedMovies;
                 rcdHeader.Visibility = Visibility.Visible;
                 rcdMovies.Visibility = Visibility.Visible;

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,6 @@ namespace Recommendation
     public class Ranker
     {
         DBconnection DB;
-        Dictionary<int,MovieParams> moviesComputedParams;
         Dictionary<int, List<int>> movieRecommendations;
         int numOfRecommended;
         List<int> moviesID;
@@ -27,54 +28,17 @@ namespace Recommendation
             DB = new DBconnection();
             numOfRecommended = _numOfRecommended;
             moviesID = DB.getMoviesIDs();
-            moviesComputedParams = new Dictionary<int, MovieParams>();
             movieRecommendations = new Dictionary<int, List<int>>();
             computeRecommendations();
+            writeRecommendations();
         }
 
-
-        /// <summary>
-        /// Computes the parameters needed for pearson correlation for all the movies in the database
-        /// </summary>
-        private void computeAllParams()
-        {
-            List<UserRank> movieUsersRank;
-            foreach (int id in moviesID)
-            {
-                movieUsersRank = new List<UserRank>();
-                DB.getMovieVector(id, ref movieUsersRank);
-                moviesComputedParams[id] = computeMovieParams(ref movieUsersRank);
-            }
-        }
-
-        /// <summary>
-        /// Computes the movie parameters for a single movie
-        /// </summary>
-        /// <param name="movieUsersRank">The list of users ranking to update</param>
-        /// <returns></returns>
-        private MovieParams computeMovieParams(ref List<UserRank> movieUsersRank)
-        {
-            MovieParams mp = new MovieParams();
-            double sqr_xi = 0;
-            double sum_xi = 0;
-
-            foreach (UserRank rank in movieUsersRank)
-            {
-                sum_xi += rank.Rating;
-                sqr_xi += rank.Rating*rank.Rating;
-            }
-            mp.Avg_xi = sum_xi / moviesID.Count();
-            mp.Var_xi = moviesID.Count() * sqr_xi - sum_xi * sum_xi;
-
-            return mp;
-        }
 
         /// <summary>
         /// Compute recommmendation for all the movies in the database
         /// </summary>
         private void computeRecommendations()
         {
-            computeAllParams();
             foreach (int movieID in moviesID)
             {  
                 movieRecommendations.Add(movieID, computeMovieRecommendation(movieID));
@@ -91,7 +55,7 @@ namespace Recommendation
             List<int> recommendedMovies = new List<int>();
             Dictionary<int, double> similarMovies = new Dictionary<int, double>();
             double rank = 0;
-            double max=0;
+           int max;
             
 
             //compute similarity with all the other movies
@@ -99,10 +63,12 @@ namespace Recommendation
             {
                 if (movieToRecommend != movieID)
                 {
+                    Stopwatch sw = new Stopwatch();
                     rank = computeSimilarity
-           (moviesComputedParams[movieToRecommend], moviesComputedParams[movieID], movieToRecommend, movieID);
+           ( movieToRecommend, movieID);
+                    if(rank!=-2)
+                        similarMovies.Add(movieID, rank);
                 }
-                similarMovies.Add(movieID, rank);
             }
 
             int numOfRankedMovies = similarMovies.Count();
@@ -110,11 +76,33 @@ namespace Recommendation
             //recommend get the top movies and save them
             for (int i = 0; i < numOfRecommended && i < numOfRankedMovies; i++)
             {
-                recommendedMovies[i] = similarMovies.Max().Key;
-                similarMovies.Remove(recommendedMovies[i]);
+                max = getMaxEntry(ref similarMovies);
+                if (max != -1)
+                recommendedMovies.Add(max);
+                similarMovies.Remove(max);
             }
 
             return recommendedMovies;
+        }
+
+        private int getMaxEntry(ref Dictionary<int, double> similarMovies)
+        {
+            KeyValuePair<int, double> maxEntry=new KeyValuePair<int, double>(-5,-5);
+
+            if (similarMovies.Count != 0)
+            {
+                maxEntry = similarMovies.First();
+            }
+            else
+                return -1;
+
+
+            foreach (KeyValuePair<int,double> entry in similarMovies)
+            {
+                if (entry.Value > maxEntry.Value)
+                    maxEntry = entry;
+            }
+            return maxEntry.Key;
         }
 
         /// <summary>
@@ -123,37 +111,104 @@ namespace Recommendation
         /// <param name="movieParams1">The parameters of the first movie</param>
         /// <param name="movieParams2">The parameters of the second movie</param>
         /// <returns></returns>
-        private double computeSimilarity(MovieParams movieParams1, MovieParams movieParams2, int id1, int id2)
+        private double computeSimilarity(int id1, int id2)
         {
             //computation of the formula here
-            double denominator = movieParams1.Var_xi*movieParams2.Var_xi;
+            double sqr_xi=0, sqr_yi=0;
+            double var_xi = 0, var_yi = 0;
+            double avg_xi = 0, avg_yi = 0;
+            double denominator = 0;
             double numerator = 0;
             int i=0, j=0;
+            int counter = 0;
+            double userRankMovie1 = 0;
+            double userRankMovie2 = 0;
+            double numOfEquals = 0;
+
             List<UserRank> movie1Rank=new List<UserRank>(), movie2Rank = new List<UserRank>();
 
             DB.getMovieVector(id1, ref movie1Rank);
-            DB.getMovieVector(id1, ref movie2Rank);
+            DB.getMovieVector(id2, ref movie2Rank);
 
             while(i < movie1Rank.Count && j < movie2Rank.Count())
             {
-                if (movie1Rank[i].UserID == movie2Rank[j].UserID)
+                if (movie1Rank[i].UserID == movie2Rank[j].UserID) //case its the same user
                 {
-                    numerator += movie1Rank[i].Rating * movie2Rank[j].Rating;
+                    userRankMovie1 = movie1Rank[i].Rating;
+                    userRankMovie2 = movie2Rank[j].Rating;
+
+                    if (userRankMovie1 != 0 && userRankMovie2 != 0)
+                    {
+                        numerator += movie1Rank[i].Rating * movie2Rank[j].Rating;
+                        sqr_xi += userRankMovie1 * userRankMovie1;
+                        sqr_yi += userRankMovie2 * userRankMovie2;
+                        if (userRankMovie1 == userRankMovie2)
+                        {
+                            numOfEquals++;
+                        }
+                        avg_xi += userRankMovie1;
+                        avg_yi += userRankMovie2;
+                        counter++;
+                    }
                     i++;
                     j++;
+
                 }
                 else if (movie1Rank[i].UserID > movie2Rank[j].UserID)
                     j++;
                 else
                     i++;
             }
-            numerator = numerator - moviesID.Count * movieParams1.Avg_xi * movieParams2.Avg_xi;
-            return numerator / denominator;
+
+            if (avg_xi == 0)
+            {
+                return -2;
+            }
+
+            avg_xi = avg_xi / counter;
+            avg_yi = avg_yi / counter;
+
+            numerator = numerator - counter * avg_xi * avg_yi;
+            var_xi = Math.Sqrt(sqr_xi - counter * avg_xi * avg_xi);
+            var_yi = Math.Sqrt(sqr_yi - counter * avg_yi * avg_yi);
+            denominator = var_xi * var_yi;
+            double rank = numerator / denominator;
+            if (counter < 20)
+                rank -= 1;
+            if (counter < 250)
+                rank -= 0.5;
+            return rank;
         }
 
-        public List<int> getRecommendedMovies(int movieID)
+        public List<string> getRecommendedMovies(int movieID)
         {
-            return movieRecommendations[movieID];
+            List<string> moviesToReturn = new List<string>();
+            foreach(int _movieID in movieRecommendations[movieID])
+            {
+                moviesToReturn.Add(DB.movies[_movieID]);
+            }
+            return moviesToReturn;
+        }
+
+        public void writeRecommendations()
+        {
+            List<String> moviesToWrite;
+            using (FileStream fs = File.OpenWrite(@"C:\Users\Kulik\Desktop\movieDB\recommendation2.txt"))
+            {
+                using (StreamWriter writer = new StreamWriter(fs))
+                {
+                    foreach (KeyValuePair<int, List<int>> movieRecommendation in movieRecommendations)
+                    {
+                        writer.Write(DB.movies[movieRecommendation.Key]+",");
+                        moviesToWrite = getRecommendedMovies(movieRecommendation.Key);
+                        foreach (string recommendedMovie in moviesToWrite)
+                        {
+                            writer.Write(recommendedMovie + ",");
+                        }
+                        writer.WriteLine();
+                    }
+                }
+            }
         }
     }
 }

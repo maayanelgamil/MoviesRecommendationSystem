@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Recommendation"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="Movies Recommendation System" Height="600" Width="550">
+
     <Window.Background>
         <ImageBrush ImageSource="img/background.jpg" Stretch="UniformToFill"/>
     </Window.Background>
@@ -23,14 +25,14 @@
             <RowDefinition Height="172*"/>
             <RowDefinition Height="47*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Movies" FontWeight="Bold" FontSize="60" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Grid.Column="1" Foreground="#FFF9F7F7" Margin="27,34,28,111"/>
-        <TextBlock Text="Recommendation"  FontSize="40" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Foreground="#FFFDFBFB" Margin="0,121,0,63" Grid.Column="0" Grid.ColumnSpan="3" />
-        <TextBlock Text="System"  FontSize="40" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Foreground="#FFFDFBFB" Margin="0,174,0,10" Grid.Column="0" Grid.ColumnSpan="3" />
+        <TextBlock Text="Movies" FontWeight="Bold" FontSize="50" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Grid.Column="1" Foreground="#FFF9F7F7" Margin="27,34,28,111"/>
+        <TextBlock Text="Recommendation"  FontSize="38" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Foreground="#FFFDFBFB" Margin="0,100,0,83.6" Grid.Column="0" Grid.ColumnSpan="3" />
+        <TextBlock Text="System"  FontSize="38" TextAlignment="Center" FontFamily="Showcard Gothic"  Grid.Row="0" Foreground="#FFFDFBFB" Margin="0,154,0,29.6" Grid.Column="0" Grid.ColumnSpan="3" />
 
-        <TextBlock Text="Enter a movie:" Grid.Column="1" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Margin="70,238,70,1" Grid.RowSpan="2" />
-        <TextBox Name="slctMovie" Margin="70,8,70,8" Grid.Row="2" Grid.Column="1"  />
+        <TextBlock Text="Enter a movie:" Grid.Column="1" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Margin="70.2,212,70.2,28.8" Grid.RowSpan="2" />
+        <TextBox Name="slctMovie" FontFamily="simsun" FontSize="16" Margin="70.2,7.4,70.2,0.8" Grid.Row="1" Grid.Column="1"  />
         <Button Name="Search" Click="Search_Click" Content="Search" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="69" BorderBrush="#FFF7F2F2" Background="#FFC3C1BB" />
-        <TextBlock Name="rcdHeader" Text="Recommended movies:" Visibility="Hidden" VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Grid.Row="4" Margin="30,10,30,126" Grid.Column="1" />
-        <ListBox  Name="rcdMovies" SelectionMode="Multiple" Visibility="Hidden" Grid.Row="4" Grid.Column="1" Margin="60,50,60,0" ></ListBox>
+        <TextBlock Name="rcdHeader"  Text="Recommended movies:"  VerticalAlignment="Center" Height="36" Foreground="#FFFBF7F7" FontFamily="MV Boli" FontSize="24" FontWeight="Bold" Grid.Row="2" Margin="31.2,6.2,29.2,33" Grid.Column="1" Grid.RowSpan="2" />
+        <ListBox  Name="rcdMovies"  Visibility="Hidden" FontFamily="simsun" FontSize="16" SelectionMode="Multiple"  Grid.Row="4" Grid.Column="1" Margin="60.2,10" Grid.RowSpan="2" ></ListBox>
     </Grid>
 </Window>
