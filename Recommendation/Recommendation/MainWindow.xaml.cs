@@ -36,11 +36,12 @@ namespace Recommendation
         {
             if (slctMovie.Text == string.Empty)
                 System.Windows.MessageBox.Show("Please enter a movie before searching");
-            else {
+            else
+            {
                 _movie = slctMovie.Text;
                 _recommendedMovies = model.getRecommendation(_movie.ToLower());
-                if (_recommendedMovies==null)
-                rcdMovies.ItemsSource = _recommendedMovies;
+                if (_recommendedMovies == null)
+                    rcdMovies.ItemsSource = _recommendedMovies;
                 rcdHeader.Visibility = Visibility.Visible;
                 rcdMovies.Visibility = Visibility.Visible;
             }
