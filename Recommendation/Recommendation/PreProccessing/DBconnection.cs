@@ -9,10 +9,10 @@ namespace Recommendation
 {
     class DBconnection
     {
-        const string DIRECTORY_PATH = @"C:\Users\ben\Desktop\לימודים\סמסטר ו\הכנה לפרוייקט\ml-20m";
+        public const string DIRECTORY_PATH = @"C:\Users\Kulik\Desktop\movieDB\ml-20m";
 
         Dictionary<int, List<UserRank>> moviesVectors; // contains all the movies vectors by movie ID
-        Dictionary<int, string> movies;// contains all the movies and their details
+        public Dictionary<int, string> movies;// contains all the movies and their details
 
         public DBconnection()
         {
@@ -35,13 +35,16 @@ namespace Recommendation
                     line = reader.ReadLine();
                     string[] values = line.Split(',');
                     int userID = Int32.Parse(values[0]);
-                    int movieID = Int32.Parse(values[1]);
-                    double rating = Double.Parse(values[2]);
-                    if (!moviesVectors.ContainsKey(movieID))
+                    if (userID >= 20000 && userID<= 35000)
                     {
-                        moviesVectors.Add(movieID, new List<UserRank>());
-                    }
-                    moviesVectors[movieID].Add(new UserRank(userID, rating));
+                        int movieID = Int32.Parse(values[1]);
+                        double rating = Double.Parse(values[2]);
+                        if (!moviesVectors.ContainsKey(movieID))
+                        {
+                            moviesVectors.Add(movieID, new List<UserRank>());
+                        }
+                        moviesVectors[movieID].Add(new UserRank(userID, rating));
+                    }     
                 }
             }
         }
@@ -121,6 +124,11 @@ namespace Recommendation
             {
                 movieVector = moviesVectors[movieID];
             }
+        }
+
+        public string getMovieByID(int movieID)
+        {
+            return movies[movieID];
         }
     }
 }

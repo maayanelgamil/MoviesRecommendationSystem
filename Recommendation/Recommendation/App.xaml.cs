@@ -13,11 +13,5 @@ namespace Recommendation
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
-        {
-
-            //DBconnection db = new DBconnection();
-
-        }
     }
 }

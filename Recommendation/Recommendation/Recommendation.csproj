@@ -56,7 +56,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model.cs" />
-    <Compile Include="PreProccessing\MovieParams.cs" />
     <Compile Include="PreProccessing\Ranker.cs" />
     <Compile Include="PreProccessing\UserRank.cs" />
     <Page Include="MainWindow.xaml">
